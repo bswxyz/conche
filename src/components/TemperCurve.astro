@@ -1,0 +1,75 @@
+---
+/*
+  The tempering curve — temperature vs time for one batch, drawn as a single
+  SVG path with pathLength="1" so CSS can animate stroke-dashoffset 1 → 0
+  when the figure scrolls into view. Under prefers-reduced-motion the path
+  and labels render fully, immediately: one static, honest chart.
+
+  y-axis: 20–50 °C mapped to y 380–40  ·  x-axis: 0–40 min mapped to x 60–720
+*/
+---
+<figure class="tfig" id="temperFig">
+  <svg
+    viewBox="0 0 760 430"
+    role="img"
+    aria-label="Tempering curve for one batch: melt to 45 degrees Celsius erasing every crystal, cool to 26.8 degrees while seeding Form Five, then rework to 31.5 degrees and hold — the working temper."
+  >
+    <!-- grid & axes -->
+    <g aria-hidden="true">
+      <line class="tgrid" x1="60" y1="380" x2="720" y2="380" stroke-width="1.5" />
+      <line class="tgrid" x1="60" y1="40" x2="60" y2="380" stroke-width="1.5" />
+      <line class="tguide" x1="60" y1="97" x2="720" y2="97" stroke-width="1.5" />
+      <line class="tguide" x1="60" y1="250" x2="720" y2="250" stroke-width="1.5" />
+      <line class="tguide" x1="60" y1="301" x2="720" y2="301" stroke-width="1.5" />
+      <text class="taxis" x="50" y="102" text-anchor="end">45°</text>
+      <text class="taxis" x="50" y="255" text-anchor="end">31.5°</text>
+      <text class="taxis" x="50" y="306" text-anchor="end">27°</text>
+      <text class="taxis" x="60" y="406" text-anchor="middle">0</text>
+      <text class="taxis" x="225" y="406" text-anchor="middle">10</text>
+      <text class="taxis" x="390" y="406" text-anchor="middle">20</text>
+      <text class="taxis" x="555" y="406" text-anchor="middle">30</text>
+      <text class="taxis" x="720" y="406" text-anchor="end">40 min</text>
+    </g>
+
+    <!-- phase separators & names -->
+    <g aria-hidden="true">
+      <line class="tsep" x1="265" y1="58" x2="265" y2="380" stroke-width="1.5" />
+      <line class="tsep" x1="450" y1="58" x2="450" y2="380" stroke-width="1.5" />
+      <text class="tphase" x="162" y="46" text-anchor="middle">I — MELT</text>
+      <text class="tphase" x="357" y="46" text-anchor="middle">II — COOL &amp; SEED</text>
+      <text class="tphase" x="585" y="46" text-anchor="middle">III — REWORK</text>
+    </g>
+
+    <!-- the curve -->
+    <path
+      class="tpath"
+      pathLength="1"
+      d="M60 368
+         C100 368 112 97 175 97
+         L258 97
+         C332 97 336 301 398 301
+         L444 301
+         C482 301 484 250 522 250
+         L720 250"
+    />
+    <circle class="tdot" cx="720" cy="250" r="6" />
+
+    <!-- temperature callouts, faded in phase by phase -->
+    <g class="tlabel tl1" aria-hidden="true">
+      <text class="tnote" x="216" y="70" text-anchor="middle">45.0 °C</text>
+      <text class="tnote sub" x="216" y="88" text-anchor="middle">every crystal erased</text>
+    </g>
+    <g class="tlabel tl2" aria-hidden="true">
+      <text class="tnote" x="421" y="330" text-anchor="middle">26.8 °C</text>
+      <text class="tnote sub" x="421" y="348" text-anchor="middle">Form Ⅴ seeded</text>
+    </g>
+    <g class="tlabel tl3" aria-hidden="true">
+      <text class="tnote" x="600" y="220" text-anchor="middle">31.5 °C</text>
+      <text class="tnote sub" x="600" y="238" text-anchor="middle">working temper — hold</text>
+    </g>
+  </svg>
+  <figcaption class="mono">
+    <span>LOT 31 · SAMBIRANO 70% · TARGET CRYSTAL: FORM Ⅴ</span>
+    <span>DRAWN FROM THE BATCH LOG</span>
+  </figcaption>
+</figure>

@@ -1,0 +1,187 @@
+---
+/*
+  The origin flavor-wheel. All geometry is computed here, at build time —
+  the browser receives plain paths. Notes are grouped into six categories;
+  each origin lights the notes its bar actually hits.
+*/
+const CX = 360, CY = 360;
+const CAT_R0 = 96, CAT_R1 = 138;      // category ring
+const NOTE_R0 = 144, NOTE_R1 = 224;   // notes ring
+const LABEL_R = 234;                   // note labels sit just outside
+
+const cats = [
+  { id: 'fruit',  label: 'Fruit'  },
+  { id: 'floral', label: 'Floral' },
+  { id: 'nutty',  label: 'Nutty'  },
+  { id: 'spice',  label: 'Spice'  },
+  { id: 'earthy', label: 'Earthy' },
+  { id: 'sweet',  label: 'Sweet'  },
+];
+
+// 18 notes, three per category, in wheel order
+const notes = [
+  { n: 'red berry',      cat: 'fruit'  },
+  { n: 'dried fig',      cat: 'fruit'  },
+  { n: 'citrus peel',    cat: 'fruit'  },
+  { n: 'jasmine',        cat: 'floral' },
+  { n: 'orange blossom', cat: 'floral' },
+  { n: 'honeysuckle',    cat: 'floral' },
+  { n: 'almond',         cat: 'nutty'  },
+  { n: 'hazelnut',       cat: 'nutty'  },
+  { n: 'walnut',         cat: 'nutty'  },
+  { n: 'cinnamon',       cat: 'spice'  },
+  { n: 'black tea',      cat: 'spice'  },
+  { n: 'licorice',       cat: 'spice'  },
+  { n: 'forest floor',   cat: 'earthy' },
+  { n: 'leather',        cat: 'earthy' },
+  { n: 'tobacco',        cat: 'earthy' },
+  { n: 'caramel',        cat: 'sweet'  },
+  { n: 'honey',          cat: 'sweet'  },
+  { n: 'molasses',       cat: 'sweet'  },
+];
+
+const origins = [
+  {
+    id: 'madagascar', pct: '70%', name: 'Sambirano 70', place: 'Sambirano Valley · Madagascar', country: 'Madagascar',
+    hits: ['red berry', 'citrus peel', 'jasmine', 'honey'],
+    cap: 'The loud one. Raspberry acidity straight out of the gate, citrus peel behind it, honey to land. Roasted at 118 °C so none of it burns off.',
+  },
+  {
+    id: 'ecuador', pct: '72%', name: 'Los Ríos 72', place: 'Los Ríos · Ecuador · Nacional', country: 'Ecuador',
+    hits: ['orange blossom', 'honeysuckle', 'jasmine', 'almond'],
+    cap: 'Arriba Nacional doing what it has done for four thousand years — flowers first, orange blossom over jasmine, a clean almond finish. We barely roast it.',
+  },
+  {
+    id: 'peru', pct: '68%', name: 'Marañón 68', place: 'Marañón Canyon · Peru', country: 'Peru',
+    hits: ['dried fig', 'hazelnut', 'caramel', 'forest floor'],
+    cap: 'The gentle one. Fig and hazelnut folded into caramel, with the canyon floor underneath — we conche it twelve hours less to keep that.',
+  },
+  {
+    id: 'tanzania', pct: '74%', name: 'Kilombero 74', place: 'Kilombero Valley · Tanzania', country: 'Tanzania',
+    hits: ['citrus peel', 'black tea', 'walnut', 'red berry'],
+    cap: 'Brisk, like strong tea taken outside. Citrus peel and walnut tannin over a berry base — the bar we temper coldest, 31.2 °C, for the hardest snap.',
+  },
+  {
+    id: 'vietnam', pct: '76%', name: 'Tiền Giang 76', place: 'Tiền Giang · Mekong Delta · Vietnam', country: 'Vietnam',
+    hits: ['cinnamon', 'licorice', 'leather', 'tobacco'],
+    cap: 'The argumentative one. Cinnamon and licorice up front, leather and tobacco leaf behind — Trinitario with opinions. Our longest conche: 84 hours.',
+  },
+];
+
+// origin membership per note (single source of truth: the origins above)
+const noteOrigins = (name) => origins.filter((o) => o.hits.includes(name)).map((o) => o.id);
+
+// --- geometry helpers (angles: 0° = top, clockwise) ---
+const P = (r, a) => {
+  const rad = ((a - 90) * Math.PI) / 180;
+  return [CX + r * Math.cos(rad), CY + r * Math.sin(rad)];
+};
+const f = (v) => v.toFixed(1);
+function ringSeg(r0, r1, a0, a1) {
+  const [x0, y0] = P(r1, a0), [x1, y1] = P(r1, a1);
+  const [x2, y2] = P(r0, a1), [x3, y3] = P(r0, a0);
+  const large = a1 - a0 > 180 ? 1 : 0;
+  return `M${f(x0)} ${f(y0)} A${r1} ${r1} 0 ${large} 1 ${f(x1)} ${f(y1)} ` +
+         `L${f(x2)} ${f(y2)} A${r0} ${r0} 0 ${large} 0 ${f(x3)} ${f(y3)} Z`;
+}
+
+const NOTE_SWEEP = 360 / notes.length;   // 20°
+const CAT_SWEEP = 360 / cats.length;     // 60°
+const PAD = 1.1;                          // breathing room between segments
+
+const noteSegs = notes.map((note, i) => {
+  const a0 = i * NOTE_SWEEP + PAD, a1 = (i + 1) * NOTE_SWEEP - PAD;
+  const mid = i * NOTE_SWEEP + NOTE_SWEEP / 2;
+  const [lx, ly] = P(LABEL_R, mid);
+  const left = mid > 180;
+  return {
+    ...note,
+    d: ringSeg(NOTE_R0, NOTE_R1, a0, a1),
+    origins: noteOrigins(note.n),
+    label: { x: lx, y: ly, rot: left ? mid - 270 : mid - 90, anchor: left ? 'end' : 'start' },
+    i,
+  };
+});
+
+const catSegs = cats.map((cat, i) => {
+  const a0 = i * CAT_SWEEP + PAD, a1 = (i + 1) * CAT_SWEEP - PAD;
+  const mid = i * CAT_SWEEP + CAT_SWEEP / 2;
+  const flip = mid > 95 && mid < 265;
+  const [lx, ly] = P((CAT_R0 + CAT_R1) / 2, mid);
+  return {
+    ...cat,
+    d: ringSeg(CAT_R0, CAT_R1, a0, a1),
+    pos: { x: lx, y: ly, rot: flip ? mid + 180 : mid },
+    i,
+  };
+});
+---
+<div class="wheel-grid">
+  <div class="wheel-box reveal" id="wheelBox">
+    <svg
+      class="wheel-svg"
+      id="wheel"
+      viewBox="0 0 720 720"
+      role="img"
+      aria-label="Radial flavor wheel: eighteen tasting notes in six categories — fruit, floral, nutty, spice, earthy and sweet. Selecting an origin highlights the notes its bar hits; each origin's notes are also described in the list beside the wheel."
+    >
+      <circle cx={CX} cy={CY} r={LABEL_R + 4} fill="none" class="hub-tick" stroke-dasharray="1 9" />
+      {catSegs.map((c) => (
+        <g class="cat" data-cat={c.id} style={`--i:${c.i}`}>
+          <path d={c.d} style={`fill: var(--c-${c.id})`}>
+            <title>{c.label}</title>
+          </path>
+          <text
+            x="0" y="0" text-anchor="middle" dominant-baseline="middle"
+            transform={`translate(${f(c.pos.x)} ${f(c.pos.y)}) rotate(${f(c.pos.rot)})`}
+          >{c.label}</text>
+        </g>
+      ))}
+      {noteSegs.map((s) => (
+        <g class="note" data-note={s.n} data-cat={s.cat} data-origins={s.origins.join(' ')} style={`--i:${s.i + 6}`}>
+          <path d={s.d} style={`fill: var(--c-${s.cat})`}>
+            <title>{s.n} — {s.origins.length ? 'in ' + s.origins.length + ' of our origins' : 'not in this year’s origins'}</title>
+          </path>
+          <text
+            text-anchor={s.label.anchor} dominant-baseline="middle"
+            transform={`translate(${f(s.label.x)} ${f(s.label.y)}) rotate(${f(s.label.rot)})`}
+          >{s.n}</text>
+        </g>
+      ))}
+      <circle cx={CX} cy={CY} r="86" class="hub-ring" stroke-width="1.5" />
+      <text x={CX} y={CY - 34} text-anchor="middle" class="hub-top" id="hubTop">Five origins</text>
+      <text x={CX} y={CY + 14} text-anchor="middle" class="hub-pct" id="hubPct">68–76</text>
+      <text x={CX} y={CY + 44} text-anchor="middle" class="hub-sub">% cacao</text>
+    </svg>
+    <p class="wheel-cap" id="wheelCap" aria-live="polite">
+      <strong>Every origin lands differently.</strong> Trace one from the list — the wheel lights the
+      notes that bar actually hits, and nothing it doesn’t.
+    </p>
+  </div>
+
+  <div>
+    <ul class="origin-list">
+      {origins.map((o) => (
+        <li>
+          <button
+            type="button"
+            class="origin"
+            data-origin={o.id}
+            data-pct={o.pct}
+            data-name={o.country}
+            data-cap={`${o.name} — ${o.cap}`}
+            aria-pressed="false"
+          >
+            <span class="o-pct" aria-hidden="true">{o.pct}</span>
+            <span>
+              <span class="o-name">{o.name}</span>
+              <span class="o-place">{o.place}</span>
+            </span>
+            <span class="o-mark" aria-hidden="true"></span>
+          </button>
+        </li>
+      ))}
+    </ul>
+    <p class="wheel-hint mono">Hover, tap or tab — press again to clear</p>
+  </div>
+</div>

@@ -1,0 +1,440 @@
+---
+import '../styles/global.css';
+import HeroBar from '../components/HeroBar.astro';
+import FlavorWheel from '../components/FlavorWheel.astro';
+import TemperCurve from '../components/TemperCurve.astro';
+import BarMold from '../components/BarMold.astro';
+
+const rawBase = import.meta.env.BASE_URL;
+const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
+
+const bars = [
+  { name: 'Sambirano 70', pct: '70', kind: 'grid', origin: 'Sambirano Valley · Madagascar',
+    spec: '70% · 72 h conche · 19 µm', notes: 'red berry · citrus peel · honey', price: '£9',
+    tag: 'in stock', tagClass: 'tag--ok', milk: false,
+    alt: 'Molded chocolate bar, classic square grid, 70 embossed at its centre' },
+  { name: 'Los Ríos 72', pct: '72', kind: 'fingers', origin: 'Los Ríos · Ecuador · Nacional',
+    spec: '72% · 60 h conche · 20 µm', notes: 'orange blossom · jasmine · almond', price: '£10',
+    tag: 'small batch ×220', tagClass: 'tag--ok', milk: false,
+    alt: 'Molded chocolate bar of four long fingers, 72 embossed at its centre' },
+  { name: 'Marañón 68', pct: '68', kind: 'diamond', origin: 'Marañón Canyon · Peru',
+    spec: '68% · 60 h conche · 21 µm', notes: 'dried fig · hazelnut · caramel', price: '£11',
+    tag: 'last of the harvest', tagClass: 'tag--low', milk: false,
+    alt: 'Molded chocolate bar with a diamond lattice pattern, 68 embossed at its centre' },
+  { name: 'Kilombero 74', pct: '74', kind: 'chevron', origin: 'Kilombero Valley · Tanzania',
+    spec: '74% · 72 h conche · 19 µm', notes: 'citrus peel · black tea · walnut', price: '£9',
+    tag: 'in stock', tagClass: 'tag--ok', milk: false,
+    alt: 'Molded chocolate bar ridged with chevrons, 74 embossed at its centre' },
+  { name: 'Tiền Giang 76', pct: '76', kind: 'dots', origin: 'Tiền Giang · Mekong Delta · Vietnam',
+    spec: '76% · 84 h conche · 18 µm', notes: 'cinnamon · licorice · leather', price: '£10',
+    tag: 'in stock', tagClass: 'tag--ok', milk: false,
+    alt: 'Molded chocolate bar of round bosses, 76 embossed at its centre' },
+  { name: 'Dark Milk 55', pct: '55', kind: 'split', origin: 'Sambirano cacao · malted milk',
+    spec: '55% · 48 h conche · 20 µm', notes: 'toffee · malt · red berry — the exception', price: '£9.50',
+    tag: 'restocks september', tagClass: 'tag--low', milk: true,
+    alt: 'Lighter milk chocolate bar split into two halves by a crack, 55 embossed at its centre' },
+];
+
+const phases = [
+  { no: 'Ⅰ', name: 'Melt', temp: '45.0 °C — 8 min',
+    body: 'Everything up to forty-five and held there until every crystal the chocolate ever knew is gone. You cannot temper over a memory.' },
+  { no: 'Ⅱ', name: 'Cool & seed', temp: '26.8 °C — 14 min',
+    body: 'Down to twenty-seven on the stone slab, working constantly. This is where Form Ⅴ — the only crystal that snaps, shines and melts at body heat — is born.' },
+  { no: 'Ⅲ', name: 'Rework & hold', temp: '31.5 °C — to the mold',
+    body: 'Back up to thirty-one and a half, killing the weaker forms and keeping the fifth. Half a degree high and the bar blooms grey. We hold half a degree.' },
+];
+
+const stockists = [
+  { name: 'The Winnow Room', kind: 'our own counter — open Saturdays, 9–4', city: 'Peckham · London' },
+  { name: 'Motes & Grain', kind: 'coffee — ask for the 74% with the Kenyan pour-over', city: 'Shoreditch · London' },
+  { name: 'Pale Fox', kind: 'natural wine — they file our bars under “tannin”', city: 'Copenhagen' },
+  { name: 'Ferment', kind: 'cheese & larder — the fig 68% lives by the till', city: 'Edinburgh' },
+  { name: 'Crumb', kind: 'bakery — first stockist, still our toughest critic', city: 'Amsterdam' },
+  { name: 'Kissaten Nagare', kind: 'coffee — takes half of every Vietnam lot', city: 'Osaka' },
+];
+
+const title = 'Conche — bean-to-bar chocolate, ground slow';
+const description = 'Conche is a two-person bean-to-bar chocolate workshop. Five single origins, stone-ground for up to eighty-four hours, tempered to half a degree. Two ingredients: cacao and sugar.';
+---
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script is:inline>
+  document.documentElement.classList.add('js');
+  try { var t = localStorage.getItem('conche-theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<title>{title}</title>
+<meta name="description" content={description} />
+<meta name="theme-color" content="#f6efe3" />
+<meta name="color-scheme" content="light dark" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<link rel="icon" href={`data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M14 2.5 C21 5 23.5 12 21.5 18.5 C19.5 25 8.5 25 6.5 18.5 C4.5 12 7 5 14 2.5 Z' fill='none' stroke='%23c98a3c' stroke-width='2.2' stroke-linejoin='round'/%3E%3Cpath d='M14 4 L14 24' stroke='%23c98a3c' stroke-width='1.4' opacity='.7'/%3E%3C/svg%3E`} />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Karla:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+<div class="film" aria-hidden="true"></div>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <a class="brand" href={base} aria-label="Conche home">
+    <svg class="brand-mark" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
+      <path d="M14 2.5 C21 5 23.5 12 21.5 18.5 C19.5 25 8.5 25 6.5 18.5 C4.5 12 7 5 14 2.5 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+      <path d="M14 4 L14 24" stroke="currentColor" stroke-width="1.2" opacity=".6" />
+      <path d="M8 9 Q14 12 20 9 M7.2 15 Q14 18 20.8 15" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".6" />
+    </svg>
+    <span class="brand-word">Conche</span>
+  </a>
+  <nav class="nav-links" aria-label="Primary">
+    <a href="#origins">Origins</a>
+    <a href="#temper">Tempering</a>
+    <a href="#bars">The bars</a>
+    <a href="#story">The story</a>
+    <a href="#stockists">Stockists</a>
+    <a href={`${base}guide/`}>Guide</a>
+    <a class="nav-cta" href="#stockists">Batch list</a>
+    <button id="themeBtn" class="theme-btn" type="button" aria-pressed="false" aria-label="Switch to dark mode" title="Toggle light / dark">
+      <svg class="ico-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" /><g stroke-linecap="round"><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1" /></g></svg>
+      <svg class="ico-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z" /></svg>
+    </button>
+  </nav>
+</header>
+
+<main id="main">
+
+  <!-- ============ hero — the snap ============ -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow mono">[ Bean to bar · two ingredients · lot 31 ]</p>
+        <h1 id="hero-title" class="hero-title">
+          <span class="line"><span>Three days in</span></span>
+          <span class="line"><span>the conche.</span></span>
+          <span class="line"><span>One <em>clean</em> snap.</span></span>
+        </h1>
+        <p class="hero-sub">Conche is a two-person chocolate workshop. We roast single-origin cacao
+          light, grind it under granite for as long as it asks — up to eighty-four hours — and
+          temper to half a degree, so the bar breaks like slate and melts like it was waiting for
+          you. Nothing in the tank but cacao and sugar.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#bars">See the bars</a>
+          <a class="btn btn-ghost" href="#origins">Taste by origin →</a>
+        </div>
+        <dl class="hero-facts">
+          <div><dt class="mono">Conche</dt><dd><span class="c-num" data-to="72">72</span> <span class="unit">h</span></dd></div>
+          <div><dt class="mono">Grind</dt><dd><span class="c-num" data-to="19">19</span> <span class="unit">µm</span></dd></div>
+          <div><dt class="mono">Ingredients</dt><dd><span class="c-num" data-to="2">2</span></dd></div>
+        </dl>
+      </div>
+
+      <figure class="hero-fig" aria-labelledby="hero-cap">
+        <HeroBar />
+        <figcaption id="hero-cap" class="hero-cap mono">
+          <span>LOT 31 — SAMBIRANO 70%</span>
+          <span>roast 118 °C · temper 31.5 °C · snap, 9 s</span>
+        </figcaption>
+      </figure>
+    </div>
+    <p class="hero-scroll mono" aria-hidden="true">scroll — into the grind</p>
+  </section>
+
+  <!-- ============ origins — the flavor wheel ============ -->
+  <section id="origins" class="origins">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="kicker mono reveal">[ Origins ]</p>
+        <h2 class="reveal">The bean decides. We just listen.</h2>
+        <p class="lede reveal">Cacao carries its valley the way wine carries its slope. Same roast,
+          same stone, same sugar — and Madagascar still shouts raspberry while Vietnam mutters
+          leather and spice. Eighteen notes, six families, five origins: this wheel is our whole
+          argument.</p>
+      </div>
+      <FlavorWheel />
+    </div>
+  </section>
+
+  <!-- ============ tempering ============ -->
+  <section id="temper" class="temper">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="kicker kicker--red mono reveal">[ The temper ]</p>
+        <h2 class="reveal">Half a degree is the whole job.</h2>
+        <p class="lede reveal">Cocoa butter can set into six different crystals. Five of them are
+          wrong — dull, crumbly, grey. Only Form Ⅴ snaps, shines and melts at exactly body heat.
+          Tempering is how you talk the chocolate into choosing it. Here is one batch, drawn from
+          the log.</p>
+      </div>
+
+      <div class="reveal"><TemperCurve /></div>
+
+      <div class="phases">
+        {phases.map((p) => (
+          <article class="phase reveal">
+            <span class="phase-no" aria-hidden="true">{p.no}</span>
+            <h3>{p.name}</h3>
+            <span class="phase-temp mono">{p.temp}</span>
+            <p>{p.body}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ the bars ============ -->
+  <section id="bars" class="bars">
+    <span class="wm" aria-hidden="true">cacao</span>
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="kicker mono reveal">[ The bars ]</p>
+        <h2 class="reveal">Six bars. Five valleys. Two ingredients.</h2>
+        <p class="lede reveal">Every bar is stamped with its lot number and wrapped by whichever of
+          us has the steadier hands that day. Percentages are decisions, not marketing — each origin
+          gets the sugar it needs to say what it means, and not a gram more.</p>
+      </div>
+
+      <div class="bar-grid">
+        {bars.map((b) => (
+          <article class="bar-card reveal">
+            <div class="bar-art"><BarMold kind={b.kind} pct={b.pct} milk={b.milk} title={b.alt} /></div>
+            <div class="bar-info">
+              <div class="bar-top"><h3>{b.name}</h3><span class="bar-price mono">{b.price}</span></div>
+              <p class="bar-spec mono">{b.spec}</p>
+              <p class="bar-notes">{b.notes}</p>
+              <p class="bar-spec mono" style="margin:.1rem 0 .8rem; color: var(--faint)">{b.origin}</p>
+              <span class={`bar-tag mono ${b.tagClass}`}>{b.tag}</span>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ the story ============ -->
+  <section id="story" class="story">
+    <div class="wrap story-grid">
+      <div class="story-copy">
+        <p class="kicker mono reveal">[ The story ]</p>
+        <h2 class="reveal">We bought the melangeur before the bed.</h2>
+        <p class="reveal">Conche started in 2019 in a flat above a laundrette, with a secondhand
+          granite melangeur running in the bathroom because it was the only room the neighbours
+          couldn't hear. The first sacks of Sambirano beans came up the stairs one at a time. The
+          bed came later that month. We stand by the order of operations.</p>
+        <p class="reveal">Everything still happens in one room, just a bigger one: we sort by hand,
+          roast light in a modified coffee drum, crack, winnow, and grind under granite until the
+          particles fall below twenty microns — past the point your tongue can find an edge. Then
+          the conche runs. Sixty hours, seventy-two, eighty-four; the bean decides, we just keep
+          the log.</p>
+        <p class="reveal">Every batch page in that log records the roast curve, the grind reading
+          and the temper to the tenth of a degree. Not because anyone asked — because when a bar is
+          two ingredients, the process is the recipe, and the recipe should be able to stand
+          trial.</p>
+        <p class="story-sign reveal">— Lena &amp; Noor, Conche</p>
+      </div>
+      <aside class="batch-card reveal" aria-label="This week's batch log">
+        <p class="batch-card-head mono">This week — LOT 31</p>
+        <div class="bc-row"><span class="mono">Bean</span><span>Sambirano, 2025 harvest</span></div>
+        <div class="bc-row"><span class="mono">Roast</span><span>118 °C · 22 min</span></div>
+        <div class="bc-row"><span class="mono">Winnow yield</span><span>78%</span></div>
+        <div class="bc-row"><span class="mono">Grind</span><span>19 µm</span></div>
+        <div class="bc-row"><span class="mono">Conche</span><span>72 h</span></div>
+        <div class="bc-row"><span class="mono">Temper</span><span>31.5 °C</span></div>
+        <div class="bc-row"><span class="mono">Snap</span><span>9 seconds clean</span></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ stockists ============ -->
+  <section id="stockists" class="stockists">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="kicker mono reveal">[ Stockists ]</p>
+        <h2 class="reveal">Where the bars end up.</h2>
+        <p class="lede reveal">We make about four hundred bars a week, which is as many as one
+          conche and two people can stand behind. These six counters get them first. If the shelf
+          is empty, we're tempering more.</p>
+      </div>
+      <div class="stock-grid">
+        <div>
+          <ul class="stock-rows">
+            {stockists.map((s) => (
+              <li class="stock-row reveal">
+                <span><span class="stock-name">{s.name}</span><span class="stock-kind">{s.kind}</span></span>
+                <span class="stock-city mono">{s.city}</span>
+              </li>
+            ))}
+          </ul>
+          <p class="stock-note mono reveal">wholesale? write to the winnow room — bring coffee</p>
+        </div>
+        <div class="batch-form reveal" aria-live="polite">
+          <form id="batchForm" novalidate>
+            <h3>First taste of every lot</h3>
+            <p>One email when a new batch leaves the temper — what it is, what it tastes like, and
+              which counters got it. No recipes, no discounts, no noise.</p>
+            <div class="field">
+              <label class="mono" for="bEmail">Email</label>
+              <input id="bEmail" name="email" type="email" required autocomplete="email" placeholder="you@example.com" />
+            </div>
+            <button class="btn btn-primary btn-block" type="submit">Put me on the batch list</button>
+            <p class="form-fine mono">Demo form — no email is sent or stored. See the README.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap foot-top">
+    <span class="foot-brand">
+      <svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 2.5 C21 5 23.5 12 21.5 18.5 C19.5 25 8.5 25 6.5 18.5 C4.5 12 7 5 14 2.5 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /><path d="M14 4 L14 24" stroke="currentColor" stroke-width="1.2" opacity=".6" /></svg>
+      Conche
+    </span>
+    <nav class="foot-links" aria-label="Footer">
+      <a href="#origins">Origins</a><a href="#temper">Tempering</a><a href="#bars">The bars</a><a href="#story">The story</a><a href="#stockists">Stockists</a><a href={`${base}guide/`}>Guide</a>
+    </nav>
+  </div>
+  <div class="wrap foot-bottom mono">
+    <span>© 2026 Conche — a design-showcase concept, not a real chocolate maker. Origins, lots and the batch log are fiction.</span>
+    <span>Designed &amp; built by Parable · <a href={`${base}guide/`}>How this was built →</a></span>
+  </div>
+</footer>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const root = document.documentElement;
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+  /* ---------- theme toggle ---------- */
+  const themeBtn = document.getElementById('themeBtn');
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  const syncTheme = () => {
+    const dark = root.dataset.theme === 'dark';
+    if (themeBtn) {
+      themeBtn.setAttribute('aria-pressed', String(dark));
+      themeBtn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+    }
+    if (themeMeta) themeMeta.setAttribute('content', dark ? '#211511' : '#f6efe3');
+  };
+  syncTheme();
+  themeBtn?.addEventListener('click', () => {
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem('conche-theme', root.dataset.theme); } catch (e) { /* private mode */ }
+    syncTheme();
+  });
+
+  /* ---------- hero intro (the snap fires from CSS once .loaded lands) ---------- */
+  const hero = document.querySelector('.hero');
+  if (hero) requestAnimationFrame(() => requestAnimationFrame(() => hero.classList.add('loaded')));
+
+  /* ---------- reveals + figure triggers ---------- */
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      e.target.classList.add('is-in');
+      io.unobserve(e.target);
+    }
+  }, { threshold: 0.15, rootMargin: '0px 0px -6% 0px' });
+  document.querySelectorAll('.reveal, .tfig, .wheel-box').forEach((el) => io.observe(el));
+
+  /* ---------- counters ---------- */
+  const cio = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      const el = e.target;
+      const to = parseFloat(el.dataset.to || '0');
+      cio.unobserve(el);
+      if (reduce) { el.textContent = String(to); continue; }
+      el.textContent = '0'; // real value is server-rendered; zero out only when about to animate
+      const dur = 1400, t0 = performance.now();
+      const tick = (t) => {
+        const p = clamp((t - t0) / dur, 0, 1);
+        el.textContent = String(Math.round(to * (1 - Math.pow(1 - p, 3))));
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
+  }, { threshold: 0.6 });
+  document.querySelectorAll('.c-num').forEach((el) => cio.observe(el));
+
+  /* ---------- the flavor wheel ---------- */
+  const wheel = document.getElementById('wheel');
+  const hubTop = document.getElementById('hubTop');
+  const hubPct = document.getElementById('hubPct');
+  const cap = document.getElementById('wheelCap');
+  const originBtns = Array.from(document.querySelectorAll('.origin'));
+  if (wheel && originBtns.length) {
+    const notes = Array.from(wheel.querySelectorAll('.note'));
+    const catsEls = Array.from(wheel.querySelectorAll('.cat'));
+    const defaults = {
+      top: hubTop ? hubTop.textContent : '',
+      pct: hubPct ? hubPct.textContent : '',
+      cap: cap ? cap.innerHTML : '',
+    };
+    let active = null;
+    let pinned = false; // a click pins the origin; hover/focus only borrows it
+
+    const setOrigin = (btn) => {
+      active = btn;
+      originBtns.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      const litCats = new Set();
+      notes.forEach((n) => {
+        const hit = !!btn && (n.dataset.origins || '').split(' ').includes(btn.dataset.origin);
+        n.classList.toggle('lit', hit);
+        if (hit) litCats.add(n.dataset.cat);
+      });
+      catsEls.forEach((c) => c.classList.toggle('lit', litCats.has(c.dataset.cat)));
+      wheel.classList.toggle('has-active', !!btn);
+      if (btn) {
+        if (hubTop) hubTop.textContent = btn.dataset.name || '';
+        if (hubPct) hubPct.textContent = (btn.dataset.pct || '').replace('%', '');
+        if (cap) {
+          const [name, ...rest] = (btn.dataset.cap || '').split(' — ');
+          cap.innerHTML = '';
+          const strong = document.createElement('strong');
+          strong.textContent = name + '. ';
+          cap.appendChild(strong);
+          cap.appendChild(document.createTextNode(rest.join(' — ')));
+        }
+      } else {
+        if (hubTop) hubTop.textContent = defaults.top;
+        if (hubPct) hubPct.textContent = defaults.pct;
+        if (cap) cap.innerHTML = defaults.cap;
+      }
+    };
+
+    originBtns.forEach((btn) => {
+      // hover preview is mouse-only: on touch, pointerenter fires right before
+      // click in the same tap, which would make the tap borrow-then-toggle.
+      btn.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse' && !pinned) setOrigin(btn); });
+      btn.addEventListener('focus', () => { if (!pinned) setOrigin(btn); });
+      btn.addEventListener('click', () => {
+        // a click/tap pins the origin; a second click on the pinned origin clears it.
+        if (pinned && active === btn) { pinned = false; setOrigin(null); }
+        else { pinned = true; setOrigin(btn); }
+      });
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && active) { pinned = false; setOrigin(null); }
+    });
+  }
+
+  /* ---------- batch-list demo form ---------- */
+  const form = document.getElementById('batchForm');
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = form.querySelector('#bEmail');
+      if (email && !email.checkValidity()) { email.reportValidity(); return; }
+      form.innerHTML =
+        '<div class="form-done"><strong>You’re on the list for LOT 32.</strong>' +
+        '<span class="mono">demo only — nothing was sent or stored. we’d normally write when the temper holds.</span></div>';
+    });
+  }
+</script>
+</body>
+</html>

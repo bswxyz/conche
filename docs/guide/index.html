@@ -1,0 +1,74 @@
+<!DOCTYPE html><html lang="en" data-theme="light" data-astro-cid-5tcejxga> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><script>
+  document.documentElement.classList.add('js');
+  try { var t = localStorage.getItem('conche-theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+</script><title>How Conche was built — Parable build guide</title><meta name="description" content="Build notes for Conche: a build-time SVG flavor wheel, a self-drawing tempering curve, the .js gate, honest reduced-motion, and shipping an Astro site to GitHub Pages from /docs."><meta name="theme-color" content="#f6efe3"><meta name="color-scheme" content="light dark"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M14 2.5 C21 5 23.5 12 21.5 18.5 C19.5 25 8.5 25 6.5 18.5 C4.5 12 7 5 14 2.5 Z' fill='none' stroke='%23c98a3c' stroke-width='2.2' stroke-linejoin='round'/%3E%3Cpath d='M14 4 L14 24' stroke='%23c98a3c' stroke-width='1.4' opacity='.7'/%3E%3C/svg%3E"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Karla:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/conche/_astro/guide.BGZp9Ri2.css">
+<style>.doc[data-astro-cid-5tcejxga]{position:relative;z-index:1;width:min(100% - 2.4rem,820px);margin:2rem auto 5rem}.doc-back[data-astro-cid-5tcejxga]{display:inline-flex;align-items:center;gap:.4rem;color:var(--dim);text-decoration:none;font-size:.86rem;margin-bottom:1.6rem}.doc-back[data-astro-cid-5tcejxga]:hover{color:var(--ink)}.doc[data-astro-cid-5tcejxga] h1[data-astro-cid-5tcejxga]{font-size:clamp(2.2rem,5vw,3.4rem);margin:.4rem 0 .3rem}.doc[data-astro-cid-5tcejxga] .lede{margin-bottom:2.4rem}.doc[data-astro-cid-5tcejxga] h2[data-astro-cid-5tcejxga]{font-size:clamp(1.4rem,3vw,1.9rem);margin:2.6rem 0 .6rem}.doc[data-astro-cid-5tcejxga] p[data-astro-cid-5tcejxga]{color:var(--dim);margin:.7rem 0}.doc[data-astro-cid-5tcejxga] p[data-astro-cid-5tcejxga] strong[data-astro-cid-5tcejxga]{color:var(--ink);font-weight:700}.doc[data-astro-cid-5tcejxga] ul[data-astro-cid-5tcejxga]{color:var(--dim);padding-left:1.1rem;margin:.7rem 0}.doc[data-astro-cid-5tcejxga] li[data-astro-cid-5tcejxga]{margin:.4rem 0}.doc[data-astro-cid-5tcejxga] li[data-astro-cid-5tcejxga] strong[data-astro-cid-5tcejxga]{color:var(--ink)}pre[data-astro-cid-5tcejxga]{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1rem 1.1rem;overflow-x:auto;margin:1rem 0}code[data-astro-cid-5tcejxga]{font-family:var(--font-m);font-size:.8rem}pre[data-astro-cid-5tcejxga] code[data-astro-cid-5tcejxga]{color:var(--ink);line-height:1.65}.tag-row[data-astro-cid-5tcejxga]{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.2rem 0}.tag-row[data-astro-cid-5tcejxga] span[data-astro-cid-5tcejxga]{font-family:var(--font-m);font-size:.72rem;padding:.3rem .6rem;border:1px solid var(--line);border-radius:999px;color:var(--dim)}.callout[data-astro-cid-5tcejxga]{border-left:3px solid var(--gold);background:color-mix(in oklab,var(--gold) 6%,transparent);padding:.9rem 1.1rem;border-radius:0 10px 10px 0;margin:1.4rem 0}.callout[data-astro-cid-5tcejxga] p[data-astro-cid-5tcejxga]{margin:0;color:var(--ink)}
+</style></head> <body data-astro-cid-5tcejxga> <div class="film" aria-hidden="true" data-astro-cid-5tcejxga></div> <main class="doc" data-astro-cid-5tcejxga> <a class="doc-back" href="/conche/" data-astro-cid-5tcejxga>← Back to Conche</a> <p class="eyebrow mono" data-astro-cid-5tcejxga>[ Parable build guide ]</p> <h1 data-astro-cid-5tcejxga>How Conche was built</h1> <p class="lede" data-astro-cid-5tcejxga>A chocolate maker's whole craft is invisible by the time you hold the bar. Conche
+    makes it visible twice: an <strong data-astro-cid-5tcejxga>origin flavor-wheel</strong> whose arc geometry is computed
+    at build time, and a <strong data-astro-cid-5tcejxga>tempering curve</strong> that draws itself out of the batch log as
+    you scroll.</p> <div class="tag-row" data-astro-cid-5tcejxga> <span data-astro-cid-5tcejxga>Astro 5 · zero client framework</span><span data-astro-cid-5tcejxga>build-time SVG</span><span data-astro-cid-5tcejxga>Playfair / Karla / Space Mono</span><span data-astro-cid-5tcejxga>light + dark</span><span data-astro-cid-5tcejxga>reduced-motion honest</span> </div> <h2 data-astro-cid-5tcejxga>The idea</h2> <p data-astro-cid-5tcejxga>Bean-to-bar makers talk like winemakers — origin, harvest, percentages, conching hours,
+    tempering to the tenth of a degree. The usual move is to say it in prose and hope. We decided
+    to <em data-astro-cid-5tcejxga>plot</em> it instead. The flavor wheel borrows the format every specialty-coffee and
+    wine taster already trusts, then makes it answer a question prose can't: <strong data-astro-cid-5tcejxga>which of these
+    eighteen notes does this origin actually hit?</strong> Hover Madagascar and raspberry lights
+    up; hover Vietnam and the wheel goes leather and smoke. The tempering section does the same for
+    craft: the curve is the recipe, so the curve is the graphic.</p> <h2 data-astro-cid-5tcejxga>The stack — why Astro</h2> <ul data-astro-cid-5tcejxga> <li data-astro-cid-5tcejxga><strong data-astro-cid-5tcejxga>Astro 5, no client framework.</strong> Bars, origins, stockists and tasting notes
+      are typed arrays in frontmatter, rendered to plain HTML at build time. The shipped page
+      carries one small vanilla script — theme, reveals, the wheel's highlighting — and nothing
+      else.</li> <li data-astro-cid-5tcejxga><strong data-astro-cid-5tcejxga>SVG math at build time.</strong> The wheel's 24 arc segments are trigonometry, and
+      trigonometry doesn't need to run in the browser. A helper in the component's frontmatter
+      emits finished <code data-astro-cid-5tcejxga>path</code> strings; the client gets geometry, not a chart library.</li> <li data-astro-cid-5tcejxga><strong data-astro-cid-5tcejxga>Playfair Display / Karla / Space Mono.</strong> A high-contrast serif with
+      confectionery-label heritage for display, a warm grotesque for body, and a typewriter mono
+      for everything a maker would log — temperatures, microns, lot numbers.</li> </ul> <h2 data-astro-cid-5tcejxga>Signature technique — a flavor wheel from pure trigonometry</h2> <p data-astro-cid-5tcejxga>Every segment of the wheel is one annular-sector path: two arcs and two radial lines. The
+    helper lives in the component frontmatter, so it executes once, at build:</p> <pre data-astro-cid-5tcejxga><code data-astro-cid-5tcejxga>// FlavorWheel.astro — runs at build time, ships as plain paths
+const P = (r, a) =&gt; {
+  const rad = ((a - 90) * Math.PI) / 180;   // 0° = top, clockwise
+  return [CX + r * Math.cos(rad), CY + r * Math.sin(rad)];
+};
+function ringSeg(r0, r1, a0, a1) {
+  const [x0, y0] = P(r1, a0), [x1, y1] = P(r1, a1);
+  const [x2, y2] = P(r0, a1), [x3, y3] = P(r0, a0);
+  const large = a1 - a0 &gt; 180 ? 1 : 0;
+  return `M${x0} ${y0} A${r1} ${r1} 0 ${large} 1 ${x1} ${y1} ` +
+         `L${x2} ${y2} A${r0} ${r0} 0 ${large} 0 ${x3} ${y3} Z`;
+}</code></pre> <p data-astro-cid-5tcejxga>Each note segment carries <code data-astro-cid-5tcejxga>data-origins="madagascar tanzania"</code> — computed from the
+    origin data, so the wheel can never disagree with the copy. The client script is then almost
+    embarrassingly small: on hover, focus or tap of an origin, toggle a <code data-astro-cid-5tcejxga>.lit</code> class on
+    matching segments and <code data-astro-cid-5tcejxga>.has-active</code> on the wheel; CSS does the dimming, the gold
+    stroke, and the hub swap. Buttons are real <code data-astro-cid-5tcejxga>&lt;button&gt;</code>s with
+<code data-astro-cid-5tcejxga>aria-pressed</code>, the caption is an <code data-astro-cid-5tcejxga>aria-live</code> region, and Escape clears
+    the selection.</p> <h2 data-astro-cid-5tcejxga>Signature technique #2 — a curve that draws itself</h2> <p data-astro-cid-5tcejxga>The tempering chart is one SVG path with <code data-astro-cid-5tcejxga>pathLength="1"</code>, which lets CSS treat the
+    whole curve as a unit dash. Off-screen it's fully offset; when an
+<code data-astro-cid-5tcejxga>IntersectionObserver</code> adds <code data-astro-cid-5tcejxga>.is-in</code>, the offset transitions to zero and
+    the batch appears to plot itself — melt, cool-and-seed, rework — with the temperature callouts
+    fading in phase by phase:</p> <pre data-astro-cid-5tcejxga><code data-astro-cid-5tcejxga>.js .tfig .tpath { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.js .tfig.is-in .tpath {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 2.8s var(--ease) .15s;
+}</code></pre> <p data-astro-cid-5tcejxga>No canvas, no requestAnimationFrame, no library — the browser's compositor does the drawing,
+    and there is nothing to pause when it scrolls away because nothing loops.</p> <h2 data-astro-cid-5tcejxga>Details that matter</h2> <ul data-astro-cid-5tcejxga> <li data-astro-cid-5tcejxga><strong data-astro-cid-5tcejxga>Content is never hidden without JS.</strong> Reveals, the hero rise and the hero
+      bar's snapped piece are all gated behind a <code data-astro-cid-5tcejxga>.js</code> class set synchronously in
+<code data-astro-cid-5tcejxga>&lt;head&gt;</code>. No JavaScript? The page reads top to bottom, bar already
+      snapped.</li> <li data-astro-cid-5tcejxga><strong data-astro-cid-5tcejxga>Reduced motion is one honest frame.</strong> Under
+<code data-astro-cid-5tcejxga>prefers-reduced-motion</code> the curve renders fully drawn, labels visible; the snap
+      piece sits in its final position; counters print their targets. Nothing animates, nothing is
+      missing.</li> <li data-astro-cid-5tcejxga><strong data-astro-cid-5tcejxga>The ease is in character.</strong> One named curve —
+<code data-astro-cid-5tcejxga>cubic-bezier(.77, 0, .16, 1)</code>, "the temper": slow melt in, clean snap out — runs
+      every large move on the page.</li> <li data-astro-cid-5tcejxga><strong data-astro-cid-5tcejxga>Both themes are the product.</strong> Light is the cream wrapper with gold foil;
+      dark is the inside of a 70% bar. All of it is tokens flipped on
+<code data-astro-cid-5tcejxga>:root[data-theme]</code>, persisted under <code data-astro-cid-5tcejxga>conche-theme</code>.</li> <li data-astro-cid-5tcejxga><strong data-astro-cid-5tcejxga>Every internal link goes through the base.</strong> The site deploys under
+<code data-astro-cid-5tcejxga>/conche/</code>, so hrefs are built from <code data-astro-cid-5tcejxga>import.meta.env.BASE_URL</code> —
+      hardcode the subpath and the next rename breaks every link.</li> </ul> <div class="callout" data-astro-cid-5tcejxga><p data-astro-cid-5tcejxga>The batch-list form is a demo — it validates and confirms in place but
+    sends and stores nothing. Wire it to your own endpoint (Buttondown, Formspree, a serverless
+    function) before collecting real addresses.</p></div> <h2 data-astro-cid-5tcejxga>Ship it on GitHub Pages</h2> <p data-astro-cid-5tcejxga>Astro builds into <code data-astro-cid-5tcejxga>./docs</code>, and Pages serves <code data-astro-cid-5tcejxga>main</code> + <code data-astro-cid-5tcejxga>/docs</code>
+directly — no Actions workflow needed:</p> <pre data-astro-cid-5tcejxga><code data-astro-cid-5tcejxga>// astro.config.mjs
+export default defineConfig({
+  site: &#39;https://bswxyz.github.io&#39;,
+  base: &#39;/conche&#39;,
+  outDir: &#39;./docs&#39;,
+});</code></pre> <pre data-astro-cid-5tcejxga><code data-astro-cid-5tcejxga>npm run build
+git add -A &amp;&amp; git commit -m &quot;build&quot;
+gh repo create bswxyz/conche --public --source . --push
+gh api --method POST /repos/bswxyz/conche/pages \
+  -f &#39;source[branch]=main&#39; -f &#39;source[path]=/docs&#39;</code></pre> <p data-astro-cid-5tcejxga>A <code data-astro-cid-5tcejxga>.nojekyll</code> in <code data-astro-cid-5tcejxga>public/</code> rides along into the build so Pages serves
+    the output untouched.</p> <a class="doc-back" href="/conche/" style="margin-top:2.6rem" data-astro-cid-5tcejxga>← Back to Conche</a> </main> </body></html>

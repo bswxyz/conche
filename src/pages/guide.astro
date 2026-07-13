@@ -1,0 +1,166 @@
+---
+import '../styles/global.css';
+
+const rawBase = import.meta.env.BASE_URL;
+const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
+const title = 'How Conche was built — Parable build guide';
+---
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script is:inline>
+  document.documentElement.classList.add('js');
+  try { var t = localStorage.getItem('conche-theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<title>{title}</title>
+<meta name="description" content="Build notes for Conche: a build-time SVG flavor wheel, a self-drawing tempering curve, the .js gate, honest reduced-motion, and shipping an Astro site to GitHub Pages from /docs." />
+<meta name="theme-color" content="#f6efe3" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href={`data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M14 2.5 C21 5 23.5 12 21.5 18.5 C19.5 25 8.5 25 6.5 18.5 C4.5 12 7 5 14 2.5 Z' fill='none' stroke='%23c98a3c' stroke-width='2.2' stroke-linejoin='round'/%3E%3Cpath d='M14 4 L14 24' stroke='%23c98a3c' stroke-width='1.4' opacity='.7'/%3E%3C/svg%3E`} />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Karla:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  .doc { position: relative; z-index: 1; width: min(100% - 2.4rem, 820px); margin: 2rem auto 5rem; }
+  .doc-back { display: inline-flex; align-items: center; gap: .4rem; color: var(--dim); text-decoration: none; font-size: .86rem; margin-bottom: 1.6rem; }
+  .doc-back:hover { color: var(--ink); }
+  .doc h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); margin: .4rem 0 .3rem; }
+  .doc :global(.lede) { margin-bottom: 2.4rem; }
+  .doc h2 { font-size: clamp(1.4rem, 3vw, 1.9rem); margin: 2.6rem 0 .6rem; }
+  .doc p { color: var(--dim); margin: .7rem 0; }
+  .doc p strong { color: var(--ink); font-weight: 700; }
+  .doc ul { color: var(--dim); padding-left: 1.1rem; margin: .7rem 0; }
+  .doc li { margin: .4rem 0; }
+  .doc li strong { color: var(--ink); }
+  pre { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1rem 1.1rem; overflow-x: auto; margin: 1rem 0; }
+  code { font-family: var(--font-m); font-size: .8rem; }
+  pre code { color: var(--ink); line-height: 1.65; }
+  .tag-row { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.2rem 0; }
+  .tag-row span { font-family: var(--font-m); font-size: .72rem; padding: .3rem .6rem; border: 1px solid var(--line); border-radius: 999px; color: var(--dim); }
+  .callout { border-left: 3px solid var(--gold); background: color-mix(in oklab, var(--gold) 6%, transparent); padding: .9rem 1.1rem; border-radius: 0 10px 10px 0; margin: 1.4rem 0; }
+  .callout p { margin: 0; color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="film" aria-hidden="true"></div>
+<main class="doc">
+  <a class="doc-back" href={base}>← Back to Conche</a>
+  <p class="eyebrow mono">[ Parable build guide ]</p>
+  <h1>How Conche was built</h1>
+  <p class="lede">A chocolate maker's whole craft is invisible by the time you hold the bar. Conche
+    makes it visible twice: an <strong>origin flavor-wheel</strong> whose arc geometry is computed
+    at build time, and a <strong>tempering curve</strong> that draws itself out of the batch log as
+    you scroll.</p>
+
+  <div class="tag-row">
+    <span>Astro 5 · zero client framework</span><span>build-time SVG</span><span>Playfair / Karla / Space Mono</span><span>light + dark</span><span>reduced-motion honest</span>
+  </div>
+
+  <h2>The idea</h2>
+  <p>Bean-to-bar makers talk like winemakers — origin, harvest, percentages, conching hours,
+    tempering to the tenth of a degree. The usual move is to say it in prose and hope. We decided
+    to <em>plot</em> it instead. The flavor wheel borrows the format every specialty-coffee and
+    wine taster already trusts, then makes it answer a question prose can't: <strong>which of these
+    eighteen notes does this origin actually hit?</strong> Hover Madagascar and raspberry lights
+    up; hover Vietnam and the wheel goes leather and smoke. The tempering section does the same for
+    craft: the curve is the recipe, so the curve is the graphic.</p>
+
+  <h2>The stack — why Astro</h2>
+  <ul>
+    <li><strong>Astro 5, no client framework.</strong> Bars, origins, stockists and tasting notes
+      are typed arrays in frontmatter, rendered to plain HTML at build time. The shipped page
+      carries one small vanilla script — theme, reveals, the wheel's highlighting — and nothing
+      else.</li>
+    <li><strong>SVG math at build time.</strong> The wheel's 24 arc segments are trigonometry, and
+      trigonometry doesn't need to run in the browser. A helper in the component's frontmatter
+      emits finished <code>path</code> strings; the client gets geometry, not a chart library.</li>
+    <li><strong>Playfair Display / Karla / Space Mono.</strong> A high-contrast serif with
+      confectionery-label heritage for display, a warm grotesque for body, and a typewriter mono
+      for everything a maker would log — temperatures, microns, lot numbers.</li>
+  </ul>
+
+  <h2>Signature technique — a flavor wheel from pure trigonometry</h2>
+  <p>Every segment of the wheel is one annular-sector path: two arcs and two radial lines. The
+    helper lives in the component frontmatter, so it executes once, at build:</p>
+  <pre><code>{`// FlavorWheel.astro — runs at build time, ships as plain paths
+const P = (r, a) => {
+  const rad = ((a - 90) * Math.PI) / 180;   // 0° = top, clockwise
+  return [CX + r * Math.cos(rad), CY + r * Math.sin(rad)];
+};
+function ringSeg(r0, r1, a0, a1) {
+  const [x0, y0] = P(r1, a0), [x1, y1] = P(r1, a1);
+  const [x2, y2] = P(r0, a1), [x3, y3] = P(r0, a0);
+  const large = a1 - a0 > 180 ? 1 : 0;
+  return \`M\${x0} \${y0} A\${r1} \${r1} 0 \${large} 1 \${x1} \${y1} \` +
+         \`L\${x2} \${y2} A\${r0} \${r0} 0 \${large} 0 \${x3} \${y3} Z\`;
+}`}</code></pre>
+  <p>Each note segment carries <code>data-origins="madagascar tanzania"</code> — computed from the
+    origin data, so the wheel can never disagree with the copy. The client script is then almost
+    embarrassingly small: on hover, focus or tap of an origin, toggle a <code>.lit</code> class on
+    matching segments and <code>.has-active</code> on the wheel; CSS does the dimming, the gold
+    stroke, and the hub swap. Buttons are real <code>&lt;button&gt;</code>s with
+    <code>aria-pressed</code>, the caption is an <code>aria-live</code> region, and Escape clears
+    the selection.</p>
+
+  <h2>Signature technique #2 — a curve that draws itself</h2>
+  <p>The tempering chart is one SVG path with <code>pathLength="1"</code>, which lets CSS treat the
+    whole curve as a unit dash. Off-screen it's fully offset; when an
+    <code>IntersectionObserver</code> adds <code>.is-in</code>, the offset transitions to zero and
+    the batch appears to plot itself — melt, cool-and-seed, rework — with the temperature callouts
+    fading in phase by phase:</p>
+  <pre><code>{`.js .tfig .tpath { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.js .tfig.is-in .tpath {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 2.8s var(--ease) .15s;
+}`}</code></pre>
+  <p>No canvas, no requestAnimationFrame, no library — the browser's compositor does the drawing,
+    and there is nothing to pause when it scrolls away because nothing loops.</p>
+
+  <h2>Details that matter</h2>
+  <ul>
+    <li><strong>Content is never hidden without JS.</strong> Reveals, the hero rise and the hero
+      bar's snapped piece are all gated behind a <code>.js</code> class set synchronously in
+      <code>&lt;head&gt;</code>. No JavaScript? The page reads top to bottom, bar already
+      snapped.</li>
+    <li><strong>Reduced motion is one honest frame.</strong> Under
+      <code>prefers-reduced-motion</code> the curve renders fully drawn, labels visible; the snap
+      piece sits in its final position; counters print their targets. Nothing animates, nothing is
+      missing.</li>
+    <li><strong>The ease is in character.</strong> One named curve —
+      <code>cubic-bezier(.77, 0, .16, 1)</code>, "the temper": slow melt in, clean snap out — runs
+      every large move on the page.</li>
+    <li><strong>Both themes are the product.</strong> Light is the cream wrapper with gold foil;
+      dark is the inside of a 70% bar. All of it is tokens flipped on
+      <code>:root[data-theme]</code>, persisted under <code>conche-theme</code>.</li>
+    <li><strong>Every internal link goes through the base.</strong> The site deploys under
+      <code>/conche/</code>, so hrefs are built from <code>import.meta.env.BASE_URL</code> —
+      hardcode the subpath and the next rename breaks every link.</li>
+  </ul>
+
+  <div class="callout"><p>The batch-list form is a demo — it validates and confirms in place but
+    sends and stores nothing. Wire it to your own endpoint (Buttondown, Formspree, a serverless
+    function) before collecting real addresses.</p></div>
+
+  <h2>Ship it on GitHub Pages</h2>
+  <p>Astro builds into <code>./docs</code>, and Pages serves <code>main</code> + <code>/docs</code>
+    directly — no Actions workflow needed:</p>
+  <pre><code>{`// astro.config.mjs
+export default defineConfig({
+  site: 'https://bswxyz.github.io',
+  base: '/conche',
+  outDir: './docs',
+});`}</code></pre>
+  <pre><code>{`npm run build
+git add -A && git commit -m "build"
+gh repo create bswxyz/conche --public --source . --push
+gh api --method POST /repos/bswxyz/conche/pages \\
+  -f 'source[branch]=main' -f 'source[path]=/docs'`}</code></pre>
+  <p>A <code>.nojekyll</code> in <code>public/</code> rides along into the build so Pages serves
+    the output untouched.</p>
+
+  <a class="doc-back" href={base} style="margin-top:2.6rem">← Back to Conche</a>
+</main>
+</body>
+</html>

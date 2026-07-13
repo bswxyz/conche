@@ -1,0 +1,73 @@
+---
+/*
+  Top-down molded bar art for the shop cards. Six mold patterns, one per
+  origin, all drawn from theme tokens — no image files. `milk` lightens
+  the chocolate for the dark milk bar.
+*/
+const { kind = 'grid', pct = '70', milk = false, title = 'Molded chocolate bar' } = Astro.props;
+const uid = `bm-${kind}${milk ? '-milk' : ''}`;
+
+// inner mold area: x 38–162, y 18–107
+const segs = [];
+const lines = [];
+const dots = [];
+const chevrons = [];
+
+if (kind === 'grid') {
+  for (let r = 0; r < 3; r++)
+    for (let c = 0; c < 4; c++)
+      segs.push({ x: 38 + c * 32, y: 18 + r * 31, w: 27, h: 26, rx: 4 });
+} else if (kind === 'fingers') {
+  for (let c = 0; c < 4; c++)
+    segs.push({ x: 38 + c * 32, y: 18, w: 26, h: 89, rx: 11 });
+} else if (kind === 'diamond') {
+  for (let k = -5; k <= 10; k++) {
+    lines.push({ x1: 30 + k * 22, y1: 10, x2: 30 + k * 22 - 105, y2: 115 });
+    lines.push({ x1: 30 + k * 22 - 105, y1: 10, x2: 30 + k * 22, y2: 115 });
+  }
+} else if (kind === 'chevron') {
+  for (let r = 0; r < 4; r++) {
+    let d = `M34 ${26 + r * 24}`;
+    for (let x = 34; x < 166; x += 22) d += ` l11 9 l11 -9`;
+    chevrons.push(d);
+  }
+} else if (kind === 'dots') {
+  for (let r = 0; r < 3; r++)
+    for (let c = 0; c < 4; c++)
+      dots.push({ cx: 52 + c * 32, cy: 31 + r * 31, r: 10.5 });
+} else if (kind === 'split') {
+  segs.push({ x: 36, y: 16, w: 61, h: 93, rx: 8 });
+  segs.push({ x: 103, y: 16, w: 61, h: 93, rx: 8 });
+}
+---
+<svg viewBox="0 0 200 125" class={`barmold ${milk ? 'milk' : ''}`} role="img" aria-label={title} focusable="false">
+  <defs>
+    <clipPath id={uid}><rect x="30" y="10" width="140" height="105" rx="10" /></clipPath>
+  </defs>
+  <rect class="b-base" x="30" y="10" width="140" height="105" rx="10" />
+  <g clip-path={`url(#${uid})`}>
+    {segs.map((s) => (
+      <>
+        <rect class="b-seg" x={s.x} y={s.y} width={s.w} height={s.h} rx={s.rx} />
+        <rect class="b-hi" x={s.x + 3} y={s.y + 3} width={s.w - 6} height={s.h - 6} rx={Math.max(2, s.rx - 2)} />
+      </>
+    ))}
+    {lines.map((l) => (
+      <line class="b-line" x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} />
+    ))}
+    {chevrons.map((d) => (
+      <path class="b-line" d={d} stroke-width="2.2" />
+    ))}
+    {dots.map((c) => (
+      <>
+        <circle class="b-seg" cx={c.cx} cy={c.cy} r={c.r} />
+        <circle class="b-hi" cx={c.cx} cy={c.cy} r={c.r - 3.2} />
+      </>
+    ))}
+    {kind === 'split' && (
+      <path class="b-line" d="M100 8 l-4 14 l7 15 l-6 16 l6 15 l-7 16 l6 14 l-3 19" stroke-width="2.4" />
+    )}
+  </g>
+  <rect class="b-plaque" x="73" y="48" width="54" height="29" rx="6" />
+  <text class="b-pct" x="100" y="69.5" text-anchor="middle">{pct}</text>
+</svg>
