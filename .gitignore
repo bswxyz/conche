@@ -1,3 +1,6 @@
 node_modules
 .DS_Store
 .astro
+
+# local agent / editor config (not for publishing)
+.claude/
