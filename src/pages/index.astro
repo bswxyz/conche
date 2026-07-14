@@ -378,9 +378,14 @@ const description = 'Conche is a two-person bean-to-bar chocolate workshop. Five
     let active = null;
     let pinned = false; // a click pins the origin; hover/focus only borrows it
 
+    const setPressed = (btn) => {
+      originBtns.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+    };
     const setOrigin = (btn) => {
       active = btn;
-      originBtns.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      // aria-pressed is reserved for pinned state (see click handler);
+      // hover/focus previews get a visual class only.
+      originBtns.forEach((b) => b.classList.toggle('is-preview', b === btn && !pinned));
       const litCats = new Set();
       notes.forEach((n) => {
         const hit = !!btn && (n.dataset.origins || '').split(' ').includes(btn.dataset.origin);
@@ -412,14 +417,17 @@ const description = 'Conche is a two-person bean-to-bar chocolate workshop. Five
       // click in the same tap, which would make the tap borrow-then-toggle.
       btn.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse' && !pinned) setOrigin(btn); });
       btn.addEventListener('focus', () => { if (!pinned) setOrigin(btn); });
+      // previews are borrowed — hand the wheel back when the pointer/focus leaves
+      btn.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse' && !pinned && active === btn) setOrigin(null); });
+      btn.addEventListener('focusout', () => { if (!pinned && active === btn) setOrigin(null); });
       btn.addEventListener('click', () => {
         // a click/tap pins the origin; a second click on the pinned origin clears it.
-        if (pinned && active === btn) { pinned = false; setOrigin(null); }
-        else { pinned = true; setOrigin(btn); }
+        if (pinned && active === btn) { pinned = false; setPressed(null); setOrigin(null); }
+        else { pinned = true; setPressed(btn); setOrigin(btn); }
       });
     });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && active) { pinned = false; setOrigin(null); }
+      if (e.key === 'Escape' && active) { pinned = false; setPressed(null); setOrigin(null); }
     });
   }
 

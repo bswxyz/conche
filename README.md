@@ -38,7 +38,8 @@ plots it instead of describing it:
 
 - [Astro 5](https://astro.build) — content as frontmatter data arrays, zero client framework
 - One small vanilla `<script>` for theme, reveals, counters, the wheel and the demo form
-- All art is inline SVG drawn from theme tokens — no image files, no chart library, no CDN
+- All art is inline SVG drawn from theme tokens — no image files, no chart library, no JS CDN
+  (the only external requests are the three typefaces from Google Fonts)
 
 ## Run locally
 

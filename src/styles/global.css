@@ -255,7 +255,8 @@ h2 { font-size: clamp(2rem, 4vw, 3.2rem); }
   transition: transform .25s var(--ease-out), border-color .25s, background .25s;
 }
 .origin:hover { transform: translateX(5px); border-color: color-mix(in oklab, var(--gold) 55%, var(--line)); }
-.origin[aria-pressed="true"] {
+.origin[aria-pressed="true"],
+.origin.is-preview {
   border-color: var(--gold); background: color-mix(in oklab, var(--gold) 9%, var(--panel));
   transform: translateX(5px);
 }
@@ -264,7 +265,8 @@ h2 { font-size: clamp(2rem, 4vw, 3.2rem); }
 .o-place { display: block; font-family: var(--font-m); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); margin-top: .15rem; }
 .o-mark { width: 24px; height: 12px; border-radius: 3px; background: var(--choc); position: relative; opacity: .55; transition: opacity .25s; }
 .o-mark::after { content: ""; position: absolute; inset: 2px; border-radius: 2px; border: 1px solid var(--choc-hi); }
-.origin[aria-pressed="true"] .o-mark { opacity: 1; background: var(--gold); }
+.origin[aria-pressed="true"] .o-mark,
+.origin.is-preview .o-mark { opacity: 1; background: var(--gold); }
 .wheel-cap {
   margin: 1.1rem 0 0; padding: .95rem 1.1rem; border-left: 3px solid var(--gold);
   background: color-mix(in oklab, var(--gold) 6%, transparent); border-radius: 0 10px 10px 0;
@@ -402,6 +404,6 @@ h2 { font-size: clamp(2rem, 4vw, 3.2rem); }
   .wheel-svg .note path, .wheel-svg .note text,
   .wheel-svg .cat path, .wheel-svg .cat text { transition: none !important; }
   .origin, .bar-card, .btn, .theme-btn { transition: none !important; }
-  .origin:hover, .origin[aria-pressed="true"] { transform: none; }
+  .origin:hover, .origin[aria-pressed="true"], .origin.is-preview { transform: none; }
   body { transition: none; }
 }
