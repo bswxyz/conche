@@ -1,4 +1,37 @@
-# Conche — bean-to-bar chocolate, ground slow
+<!-- parable:beautified -->
+<div align="center">
+
+<h1>Conche</h1>
+
+<p><strong>Bean-to-bar chocolate maker — a radial origin flavor-wheel and a tempering curve that draws itself to temper.</strong></p>
+
+<p>
+  <a href="https://bswxyz.github.io/conche/"><img alt="Live demo" src="https://img.shields.io/badge/demo-live-8b5cf6?style=flat-square&labelColor=1a1a1a"></a>
+  <img alt="Family" src="https://img.shields.io/badge/family-Parable-ec4899?style=flat-square&labelColor=1a1a1a">
+  <img alt="Stack" src="https://img.shields.io/badge/stack-Astro-f5a623?style=flat-square&labelColor=1a1a1a">
+  <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-22c55e?style=flat-square&labelColor=1a1a1a"></a>
+</p>
+
+<p>
+  <a href="https://bswxyz.github.io/conche/"><b>Live demo</b></a>
+  &nbsp;·&nbsp;
+  <a href="https://bswxyz.github.io/conche/guide/">Build notes</a>
+  &nbsp;·&nbsp;
+  <a href="https://parable-three.vercel.app/templates">More templates</a>
+</p>
+
+<a href="https://bswxyz.github.io/conche/">
+  <img src=".github/preview.jpg" alt="Conche — live preview" width="100%">
+</a>
+
+</div>
+
+**Use this template** — copy the source into a new project:
+
+```bash
+npx degit bswxyz/conche my-app
+```
+
 
 A design-showcase website template for **Parable**: the storefront of a fictional two-person
 bean-to-bar chocolate workshop. Five single origins, two ingredients, and a brand voice that
